@@ -32,6 +32,8 @@ public class JwtFilter extends OncePerRequestFilter {
             userName =jwtService.extractUserName(token);
             logger.info("username is "+userName);
         }
+
+//        validate and check for login or not
         if(userName !=null && SecurityContextHolder.getContext().getAuthentication()==null){
             UserDetails userDetails = userInfoService.loadUserByUsername(userName);
             if(jwtService.validateToken(token,userDetails)){

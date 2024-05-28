@@ -25,7 +25,7 @@ public class JwtService {
     @Autowired
     private BlackList blackList;
 
-//    the server signs it using the secret key
+    // the server signs it using the secret key
     private static final String SECRET = "!@#$FDGSDFGSGSGSGSHSHSHSSHGFFDSGSFGSSGHSDFSDFSFSFSFSDFSFSFSF";
 
     public String generateToken(String userName) {
