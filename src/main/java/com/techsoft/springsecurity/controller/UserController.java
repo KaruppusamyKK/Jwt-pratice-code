@@ -6,17 +6,23 @@ import com.techsoft.springsecurity.logout.BlackList;
 import com.techsoft.springsecurity.service.JwtService;
 import com.techsoft.springsecurity.service.UserInfoService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Slf4j
+@CrossOrigin("*")
 @RequestMapping("/auth")
 public class UserController {
     @Autowired
@@ -35,19 +41,33 @@ public class UserController {
     }
 
     @PostMapping("/addUser")
-    public String addUser(@RequestBody UserInfo userInfo) {
-        return userInfoService.addUser(userInfo);
+    public ResponseEntity<UserInfo> addUser(@RequestBody UserInfo userInfo) {
+        userInfoService.addUser(userInfo);
+        userInfo.setToken(jwtService.generateToken(userInfo.getName(), userInfo.getPassword()));
+        return ResponseEntity.ok(userInfo);
     }
 
     @PostMapping("/login")
-    public String addUser(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthRequest> addUser(@RequestBody AuthRequest authRequest) {
+        log.info(String.valueOf(authRequest));
+        log.info("hitting here ");
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
         if (authenticate.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUserName());
+            authRequest.setToken(jwtService.generateToken(authRequest.getUserName(),authRequest.getPassword()));
+            return ResponseEntity.ok(authRequest);
+
         } else {
             throw new UsernameNotFoundException("Invalid user request");
         }
     }
+
+    @GetMapping("/hello")
+    public String hello(){
+        return "hello";
+    }
+
+
+
 //    @PostMapping("/logout")
 //    @PreAuthorize("hasAuthority('USER_ROLES') or hasAuthority('ADMIN_ROLES')")
 //    public String logoutUser(HttpServletRequest request){

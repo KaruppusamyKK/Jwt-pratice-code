@@ -28,8 +28,10 @@ public class JwtService {
     // the server signs it using the secret key
     private static final String SECRET = "!@#$FDGSDFGSGSGSGSHSHSHSSHGFFDSGSFGSSGHSDFSDFSFSFSFSDFSFSFSF";
 
-    public String generateToken(String userName) {
+    public String generateToken(String userName,String password) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userName", userName);
+        claims.put("password", password);
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userName)
